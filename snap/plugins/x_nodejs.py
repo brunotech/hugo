@@ -184,7 +184,7 @@ class NodePlugin(snapcraft.BasePlugin):
                     self._manifest["yarn-lock-contents"] = lock_file.read()
 
         self._manifest["node-packages"] = [
-            "{}={}".format(name, installed_node_packages[name])
+            f"{name}={installed_node_packages[name]}"
             for name in installed_node_packages
         ]
 
@@ -240,7 +240,7 @@ class NodePlugin(snapcraft.BasePlugin):
             shutil.copy(
                 self._source_package_json, os.path.join(rootdir, "package.json")
             )
-            self.run(yarn_add + ["file:{}".format(rootdir)] + flags, cwd=rootdir)
+            self.run(yarn_add + [f"file:{rootdir}"] + flags, cwd=rootdir)
 
         # npm run would require to bring back package.json
         if self.options.npm_run and os.path.exists(self._source_package_json):
@@ -289,7 +289,7 @@ class NodePlugin(snapcraft.BasePlugin):
         if rootdir.endswith("src"):
             hidden_path = os.path.join(rootdir, "node_modules", ".bin")
             if env.get("PATH"):
-                new_path = "{}:{}".format(hidden_path, env.get("PATH"))
+                new_path = f'{hidden_path}:{env.get("PATH")}'
             else:
                 new_path = hidden_path
             env["PATH"] = new_path
@@ -299,7 +299,7 @@ class NodePlugin(snapcraft.BasePlugin):
 def _get_nodejs_base(node_engine, machine):
     if machine not in _NODEJS_ARCHES:
         raise errors.SnapcraftEnvironmentError(
-            "architecture not supported ({})".format(machine)
+            f"architecture not supported ({machine})"
         )
     return _NODEJS_BASE.format(version=node_engine, arch=_NODEJS_ARCHES[machine])
 
